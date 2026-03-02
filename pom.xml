@@ -39,6 +39,14 @@
     
     <build>
         <plugins>
+        <plugin>
+  <groupId>org.codehaus.mojo</groupId>
+  <artifactId>exec-maven-plugin</artifactId>
+  <version>3.6.3</version>
+  <configuration>
+    <mainClass>edu.unisabana.dyas.samples.services.client.MyBatisExample</mainClass>
+  </configuration>
+</plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>sql-maven-plugin</artifactId>
@@ -51,6 +59,7 @@
                     </dependency>
                 </dependencies>
                 <configuration>
+                    <mainClass>edu.unisabana.dyas.samples.services.client.MyBatisExample</mainClass>
                     <driver>org.h2.Driver</driver>                    
                     <url>jdbc:h2:file:./target/db/testdb;MODE=MYSQL</url>
                     <autocommit>true</autocommit>
@@ -105,7 +114,7 @@
     
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.source>1.7</maven.compiler.source>
+        <maven.compiler.target>1.7</maven.compiler.target>
     </properties>
 </project>

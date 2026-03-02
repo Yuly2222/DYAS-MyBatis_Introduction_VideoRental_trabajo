@@ -1,0 +1,8 @@
+edu\unisabana\dyas\samples\entities\Item.class
+edu\unisabana\dyas\samples\services\client\MyBatisExample.class
+edu\unisabana\dyas\samples\entities\ItemRentado.class
+edu\unisabana\dyas\samples\entities\Cliente.class
+edu\unisabana\dyas\sampleprj\dao\mybatis\mappers\ClienteMapper.class
+edu\unisabana\dyas\samples\entities\TipoItem.class
+edu\unisabana\dyas\sampleprj\dao\mybatis\mappers\TipoItemMapper.class
+edu\unisabana\dyas\sampleprj\dao\mybatis\mappers\ItemMapper.class
