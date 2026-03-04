@@ -5,30 +5,66 @@
   
 <mapper namespace="edu.unisabana.dyas.sampleprj.dao.mybatis.mappers.ClienteMapper">
 
-<select parameterType="map" id="consultarClientes" resultMap="ClienteResult">
-    select
-    c.nombre,
-    c.documento,
-    c.telefono,
-    c.direccion,
-    c.email,
-    c.vetado,
-    ir.id ,
-    ir.fechainiciorenta ,
-    ir.fechafinrenta ,
-    i.id ,
-    i.nombre ,
-    i.descripcion ,
-    i.fechalanzamiento ,
-    i.tarifaxdia ,
-    i.formatorenta ,
-    i.genero ,        
-    ti.id ,
-    ti.descripcion 
-    FROM VI_CLIENTES as c 
-    left join VI_ITEMRENTADO as ir on c.documento=ir.CLIENTES_documento 
-    left join VI_ITEMS as i on ir.ITEMS_id=i.id 
-    left join VI_TIPOITEM as ti on i.TIPOITEM_id=ti.id 
-</select>
+  <select parameterType="map" id="consultarClientes" resultMap="ClienteResult">
+      SELECT 
+          c.nombre        AS cliente_nombre,
+          c.documento     AS cliente_documento,
+          c.telefono      AS cliente_telefono,
+          c.direccion     AS cliente_direccion,
+          c.email         AS cliente_email,
+          c.vetado        AS cliente_vetado,
+          ir.ITEMS_id     AS renta_items_id,
+          ir.fechainiciorenta AS renta_fechainicio,
+          ir.fechafinrenta    AS renta_fechafin,
+          i.id            AS item_id,
+          i.nombre        AS item_nombre,
+          i.descripcion   AS item_descripcion,
+          i.fechalanzamiento  AS item_fechalanzamiento,
+          i.tarifaxdia    AS item_tarifaxdia,
+          i.formatorenta  AS item_formatorenta,
+          i.genero        AS item_genero,
+          ti.id           AS tipoitem_id,
+          ti.descripcion  AS tipoitem_descripcion
+      FROM VI_CLIENTES AS c
+      LEFT JOIN VI_ITEMRENTADO AS ir ON c.documento = ir.CLIENTES_documento
+      LEFT JOIN VI_ITEMS AS i ON ir.ITEMS_id = i.id
+      LEFT JOIN VI_TIPOITEM AS ti ON i.TIPOITEM_id = ti.id
+  </select>
+
+  <resultMap id="ClienteResult" type="Cliente">
+    <id property="documento" column="cliente_documento"/>
+    <result property="nombre" column="cliente_nombre"/>
+    <result property="telefono" column="cliente_telefono"/>
+    <result property="direccion" column="cliente_direccion"/>
+    <result property="email" column="cliente_email"/>
+    <result property="vetado" column="cliente_vetado"/>
+    <collection property="rentados" ofType="ItemRentado" resultMap="ItemRentadoResult"/>
+  </resultMap>
+
+  <resultMap id="ItemRentadoResult" type="ItemRentado">
+    <id property="id" column="renta_id"/>
+    <!-- <result property="clienteDocumento" column="cliente_documento"/> -->
+    <result property="fechainiciorenta" column="renta_fechainicio" javaType="String"/>
+    <result property="fechafinrenta" column="renta_fechafin" javaType="String"/>
+    <association property="item" javaType="Item" resultMap="ItemResult"/>
+  </resultMap>
+
+  <resultMap id="ItemResult" type="Item">
+    <id property="id" column="item_id"/>
+    <result property="nombre" column="item_nombre"/>
+    <result property="descripcion" column="item_descripcion"/>
+    <result property="fechaLanzamiento" column="item_fechalanzamiento" javaType="String"/>
+    <result property="tarifaxDia" column="item_tarifaxdia"/>
+    <result property="formatoRenta" column="item_formatorenta"/>
+    <result property="genero" column="item_genero"/>
+    <!-- <collection property="itemsRentados" ofType="ItemRentado"/> -->
+    <association property="tipo" javaType="TipoItem" resultMap="TipoItemResult"/>
+  </resultMap>
+
+  <resultMap id="TipoItemResult" type="TipoItem">
+    <id property="id" column="tipoitem_id"/>
+    <result property="descripcion" column="tipoitem_descripcion"/>
+    <!-- <collection property="items" ofType="Item"/> -->
+  </resultMap>
           	
 </mapper>

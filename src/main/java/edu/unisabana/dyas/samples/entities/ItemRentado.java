@@ -6,7 +6,6 @@
 package edu.unisabana.dyas.samples.entities;
 
 import java.io.Serializable;
-import java.sql.Date;
 
 /**
  *
@@ -17,10 +16,10 @@ public class ItemRentado implements Serializable {
     private int id;
 
     private Item item;
-    private Date fechainiciorenta;
-    private Date fechafinrenta;
+    private String fechainiciorenta;
+    private String fechafinrenta;
 
-    public ItemRentado(int id, Item item, Date fechainiciorenta, Date fechafinrenta) {
+    public ItemRentado(int id, Item item, String fechainiciorenta, String fechafinrenta) {
         this.id = id;
         this.item = item;
         this.fechainiciorenta = fechainiciorenta;
@@ -46,19 +45,19 @@ public class ItemRentado implements Serializable {
         this.item = item;
     }
 
-    public Date getFechainiciorenta() {
+    public String getFechainiciorenta() {
         return fechainiciorenta;
     }
 
-    public void setFechainiciorenta(Date fechainiciorenta) {
+    public void setFechainiciorenta(String fechainiciorenta) {
         this.fechainiciorenta = fechainiciorenta;
     }
 
-    public Date getFechafinrenta() {
+    public String getFechafinrenta() {
         return fechafinrenta;
     }
 
-    public void setFechafinrenta(Date fechafinrenta) {
+    public void setFechafinrenta(String fechafinrenta) {
         this.fechafinrenta = fechafinrenta;
     }
 
