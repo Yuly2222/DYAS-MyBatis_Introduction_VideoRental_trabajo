@@ -1,44 +1,22 @@
-/*
- * Copyright (C) 2015 cesarvefe
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
 package edu.unisabana.dyas.samples.services.client;
-
-
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.SQLException;
+import java.util.Date;
+
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
-import edu.unisabana.dyas.sampleprj.dao.mybatis.mappers.ClienteMapper;
 
-/**
- *
- * @author cesarvefe
- */
+import edu.unisabana.dyas.sampleprj.dao.mybatis.mappers.ClienteMapper;
+import edu.unisabana.dyas.sampleprj.dao.mybatis.mappers.ItemMapper;
+import edu.unisabana.dyas.samples.entities.Item;
+import edu.unisabana.dyas.samples.entities.TipoItem;
+
 public class MyBatisExample {
 
-    /**
-     * Método que construye una fábrica de sesiones de MyBatis a partir del
-     * archivo de configuración ubicado en src/main/resources
-     *
-     * @return instancia de SQLSessionFactory
-     */
     public static SqlSessionFactory getSqlSessionFactory() {
         SqlSessionFactory sqlSessionFactory = null;
         if (sqlSessionFactory == null) {
@@ -53,32 +31,54 @@ public class MyBatisExample {
         return sqlSessionFactory;
     }
 
-    /**
-     * Programa principal de ejempo de uso de MyBATIS
-     * @param args
-     * @throws SQLException 
-     */
     public static void main(String args[]) throws SQLException {
         SqlSessionFactory sessionfact = getSqlSessionFactory();
-
         SqlSession sqlss = sessionfact.openSession();
 
-        
-        //Crear el mapper y usarlo: 
-        ClienteMapper cm=sqlss.getMapper(ClienteMapper.class);
+        // -------------------------------------------------------
+        // PARTE I – consultarClientes()
+        // -------------------------------------------------------
+        System.out.println("=== PARTE I: Todos los clientes ===");
+        ClienteMapper cm = sqlss.getMapper(ClienteMapper.class);
         System.out.println(cm.consultarClientes());
-        //cm...
-        
-        
-        
+
+        // -------------------------------------------------------
+        // PARTE II.1 – consultarCliente(int id)
+        // Usa @Param("idcli") → WHERE c.documento = #{idcli}
+        // -------------------------------------------------------
+        System.out.println("\n=== PARTE II.1: Consultar cliente por documento ===");
+        System.out.println(cm.consultarCliente(123456789));
+
+        // -------------------------------------------------------
+        // PARTE II.3 – agregarItemRentadoACliente
+        // -------------------------------------------------------
+        System.out.println("\n=== PARTE II.3: Agregar item rentado al cliente 555555555 ===");
+        cm.agregarItemRentadoACliente(555555555, 1, new Date(), new Date());
+        System.out.println("Item rentado agregado. Verificando cliente...");
+        System.out.println(cm.consultarCliente(555555555));
+
+        // -------------------------------------------------------
+        // PARTE II.4 – insertarItem(Item it)
+        // -------------------------------------------------------
+        System.out.println("\n=== PARTE II.4: Insertar nuevo Item ===");
+        ItemMapper im = sqlss.getMapper(ItemMapper.class);
+        TipoItem tipo = new TipoItem(2, "Mueble");
+        Item nuevoItem = new Item(tipo, 99, "Silla Gamer",
+                "Silla ergonómica para gaming", "2024-01-01",
+                3500, "Diario", "Mueble");
+        im.insertarItem(nuevoItem);
+        System.out.println("Item insertado.");
+
+        // -------------------------------------------------------
+        // PARTE II.5 – consultarItems() y consultarItem(int id)
+        // -------------------------------------------------------
+        System.out.println("\n=== PARTE II.5: Todos los items ===");
+        System.out.println(im.consultarItems());
+
+        System.out.println("\n=== PARTE II.5: Consultar item por id ===");
+        System.out.println(im.consultarItem(1));
+
         sqlss.commit();
-        
-        
         sqlss.close();
-
-        
-        
     }
-
-
 }
