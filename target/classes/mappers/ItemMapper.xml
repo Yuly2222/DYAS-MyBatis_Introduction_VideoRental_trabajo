@@ -3,49 +3,35 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="edu.unisabana.dyas.sampleprj.dao.mybatis.mappers.ClienteMapper">
+<mapper namespace="edu.unisabana.dyas.sampleprj.dao.mybatis.mappers.ItemMapper">
 
-    <!-- =====================================================
-         ResultMap: ItemRentado
-         VI_ITEMRENTADO no tiene columna 'id' → se usa
-         fechainiciorenta como discriminador de fila.
-         ItemResult referenciado via namespace absoluto (Parte II.5)
-         ===================================================== -->
-    <resultMap id="ItemRentadoResult" type="ItemRentado">
-        <id     property="fechainiciorenta" column="renta_fechainicio"/>
-        <result property="fechainiciorenta" column="renta_fechainicio" javaType="String"/>
-        <result property="fechafinrenta"    column="renta_fechafin"    javaType="String"/>
-        <association property="item" javaType="Item"
-            resultMap="edu.unisabana.dyas.sampleprj.dao.mybatis.mappers.ItemMapper.ItemResult"/>
+    <!--
+        Parte II.5: ResultMaps movidos desde ClienteMapper.xml para evitar
+        código repetido. ClienteMapper los referencia por namespace absoluto.
+    -->
+
+    <!-- ResultMap: TipoItem -->
+    <resultMap id="TipoItemResult" type="TipoItem">
+        <id     property="id"          column="tipoitem_id"/>
+        <result property="descripcion" column="tipoitem_descripcion"/>
     </resultMap>
 
-    <!-- =====================================================
-         ResultMap: Cliente
-         ===================================================== -->
-    <resultMap id="ClienteResult" type="Cliente">
-        <id     property="documento"  column="cliente_documento"/>
-        <result property="nombre"     column="cliente_nombre"/>
-        <result property="telefono"   column="cliente_telefono"/>
-        <result property="direccion"  column="cliente_direccion"/>
-        <result property="email"      column="cliente_email"/>
-        <result property="vetado"     column="cliente_vetado"/>
-        <collection property="rentados" ofType="ItemRentado"
-                    resultMap="ItemRentadoResult"/>
+    <!-- ResultMap: Item -->
+    <resultMap id="ItemResult" type="Item">
+        <id     property="id"               column="item_id"/>
+        <result property="nombre"           column="item_nombre"/>
+        <result property="descripcion"      column="item_descripcion"/>
+        <result property="fechaLanzamiento" column="item_fechalanzamiento" javaType="String"/>
+        <result property="tarifaxDia"       column="item_tarifaxdia"/>
+        <result property="formatoRenta"     column="item_formatorenta"/>
+        <result property="genero"           column="item_genero"/>
+        <association property="tipo" javaType="TipoItem"
+                     resultMap="TipoItemResult"/>
     </resultMap>
 
-    <!-- =====================================================
-         SELECT – consultarClientes()   [Parte I]
-         ===================================================== -->
-    <select id="consultarClientes" resultMap="ClienteResult">
+    <!-- Parte II.5: consultarItems() -->
+    <select id="consultarItems" resultMap="ItemResult">
         SELECT
-            c.nombre            AS cliente_nombre,
-            c.documento         AS cliente_documento,
-            c.telefono          AS cliente_telefono,
-            c.direccion         AS cliente_direccion,
-            c.email             AS cliente_email,
-            c.vetado            AS cliente_vetado,
-            ir.fechainiciorenta AS renta_fechainicio,
-            ir.fechafinrenta    AS renta_fechafin,
             i.id                AS item_id,
             i.nombre            AS item_nombre,
             i.descripcion       AS item_descripcion,
@@ -55,26 +41,13 @@
             i.genero            AS item_genero,
             ti.id               AS tipoitem_id,
             ti.descripcion      AS tipoitem_descripcion
-        FROM VI_CLIENTES AS c
-        LEFT JOIN VI_ITEMRENTADO AS ir ON c.documento = ir.CLIENTES_documento
-        LEFT JOIN VI_ITEMS       AS i  ON ir.ITEMS_id  = i.id
-        LEFT JOIN VI_TIPOITEM    AS ti ON i.TIPOITEM_id = ti.id
+        FROM VI_ITEMS AS i
+        LEFT JOIN VI_TIPOITEM AS ti ON i.TIPOITEM_id = ti.id
     </select>
 
-    <!-- =====================================================
-         SELECT – consultarCliente(int id)   [Parte II.1]
-         Filtra por documento usando el parámetro @Param("idcli")
-         ===================================================== -->
-    <select id="consultarCliente" parameterType="map" resultMap="ClienteResult">
+    <!-- Parte II.5: consultarItem(@Param("iditem") int id) -->
+    <select id="consultarItem" parameterType="map" resultMap="ItemResult">
         SELECT
-            c.nombre            AS cliente_nombre,
-            c.documento         AS cliente_documento,
-            c.telefono          AS cliente_telefono,
-            c.direccion         AS cliente_direccion,
-            c.email             AS cliente_email,
-            c.vetado            AS cliente_vetado,
-            ir.fechainiciorenta AS renta_fechainicio,
-            ir.fechafinrenta    AS renta_fechafin,
             i.id                AS item_id,
             i.nombre            AS item_nombre,
             i.descripcion       AS item_descripcion,
@@ -84,23 +57,20 @@
             i.genero            AS item_genero,
             ti.id               AS tipoitem_id,
             ti.descripcion      AS tipoitem_descripcion
-        FROM VI_CLIENTES AS c
-        LEFT JOIN VI_ITEMRENTADO AS ir ON c.documento = ir.CLIENTES_documento
-        LEFT JOIN VI_ITEMS       AS i  ON ir.ITEMS_id  = i.id
-        LEFT JOIN VI_TIPOITEM    AS ti ON i.TIPOITEM_id = ti.id
-        WHERE c.documento = #{idcli}
+        FROM VI_ITEMS AS i
+        LEFT JOIN VI_TIPOITEM AS ti ON i.TIPOITEM_id = ti.id
+        WHERE i.id = #{iditem}
     </select>
 
-    <!-- =====================================================
-         INSERT – agregarItemRentadoACliente   [Parte II.3]
-         Parámetros: @Param("idc"), @Param("idi"),
-                     @Param("fechainicio"), @Param("fechafin")
-         ===================================================== -->
-    <insert id="agregarItemRentadoACliente" parameterType="map">
-        INSERT INTO VI_ITEMRENTADO
-            (CLIENTES_documento, ITEMS_id, fechainiciorenta, fechafinrenta)
+    <!-- Parte II.4: insertarItem(@Param("item") Item it) -->
+    <insert id="insertarItem" parameterType="map">
+        INSERT INTO VI_ITEMS
+            (id, nombre, descripcion, fechalanzamiento,
+             tarifaxdia, formatorenta, genero, TIPOITEM_id)
         VALUES
-            (#{idc}, #{idi}, #{fechainicio}, #{fechafin})
+            (#{item.id}, #{item.nombre}, #{item.descripcion},
+             #{item.fechaLanzamiento}, #{item.tarifaxDia},
+             #{item.formatoRenta}, #{item.genero}, #{item.tipo.id})
     </insert>
 
 </mapper>

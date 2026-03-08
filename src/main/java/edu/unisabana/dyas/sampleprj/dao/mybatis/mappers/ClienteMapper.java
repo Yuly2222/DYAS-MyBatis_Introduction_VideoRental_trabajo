@@ -8,32 +8,15 @@ import edu.unisabana.dyas.samples.entities.Cliente;
 
 public interface ClienteMapper {
 
-    /**
-     * Consulta un cliente específico por su número de documento.
-     * 
-     * @param id número de documento del cliente
-     * @return Cliente con sus ItemsRentados, Items y TipoItem asociados
-     */
+    // Parte II.1 — @Param("idcli") para usar #{idcli} en el WHERE
     public Cliente consultarCliente(@Param("idcli") int id);
 
-    /**
-     * Registra un nuevo ItemRentado asociado al cliente (idc) con el item (idi).
-     * 
-     * @param id          documento del cliente
-     * @param idit        id del item a rentar
-     * @param fechainicio fecha de inicio de la renta
-     * @param fechafin    fecha de fin de la renta
-     */
+    // Parte II.3 — cada parámetro anotado con @Param
     public void agregarItemRentadoACliente(
             @Param("idc") int id,
             @Param("idi") int idit,
             @Param("fechainicio") Date fechainicio,
             @Param("fechafin") Date fechafin);
 
-    /**
-     * Consulta todos los clientes con sus items rentados.
-     * 
-     * @return lista de todos los clientes
-     */
     public List<Cliente> consultarClientes();
 }

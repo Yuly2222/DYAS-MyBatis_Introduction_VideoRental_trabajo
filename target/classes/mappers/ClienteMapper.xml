@@ -5,21 +5,16 @@
 
 <mapper namespace="edu.unisabana.dyas.sampleprj.dao.mybatis.mappers.ClienteMapper">
 
-    <!-- =====================================================
-         ResultMap: ItemRentado
-         Referencia ItemResult via namespace absoluto (Parte II.5)
-         ===================================================== -->
+    
     <resultMap id="ItemRentadoResult" type="ItemRentado">
-        <id     property="id"              column="renta_id"/>
+        <id     property="fechainiciorenta" column="renta_fechainicio"/>
         <result property="fechainiciorenta" column="renta_fechainicio" javaType="String"/>
         <result property="fechafinrenta"    column="renta_fechafin"    javaType="String"/>
         <association property="item" javaType="Item"
             resultMap="edu.unisabana.dyas.sampleprj.dao.mybatis.mappers.ItemMapper.ItemResult"/>
     </resultMap>
 
-    <!-- =====================================================
-         ResultMap: Cliente
-         ===================================================== -->
+    <!-- ResultMap: Cliente -->
     <resultMap id="ClienteResult" type="Cliente">
         <id     property="documento"  column="cliente_documento"/>
         <result property="nombre"     column="cliente_nombre"/>
@@ -31,10 +26,8 @@
                     resultMap="ItemRentadoResult"/>
     </resultMap>
 
-    <!-- =====================================================
-         SELECT – consultarClientes()   [Parte I]
-         ===================================================== -->
-    <select id="consultarClientes" parameterType="map" resultMap="ClienteResult">
+    <!-- Parte I: consultarClientes() -->
+    <select id="consultarClientes" resultMap="ClienteResult">
         SELECT
             c.nombre            AS cliente_nombre,
             c.documento         AS cliente_documento,
@@ -42,7 +35,6 @@
             c.direccion         AS cliente_direccion,
             c.email             AS cliente_email,
             c.vetado            AS cliente_vetado,
-            ir.id               AS renta_id,
             ir.fechainiciorenta AS renta_fechainicio,
             ir.fechafinrenta    AS renta_fechafin,
             i.id                AS item_id,
@@ -55,15 +47,12 @@
             ti.id               AS tipoitem_id,
             ti.descripcion      AS tipoitem_descripcion
         FROM VI_CLIENTES AS c
-        LEFT JOIN VI_ITEMRENTADO AS ir ON c.documento = ir.CLIENTES_documento
+        LEFT JOIN VI_ITEMRENTADO AS ir ON c.documento  = ir.CLIENTES_documento
         LEFT JOIN VI_ITEMS       AS i  ON ir.ITEMS_id  = i.id
         LEFT JOIN VI_TIPOITEM    AS ti ON i.TIPOITEM_id = ti.id
     </select>
 
-    <!-- =====================================================
-         SELECT – consultarCliente(int id)   [Parte II.1]
-         Filtra por documento usando el parámetro @Param("idcli")
-         ===================================================== -->
+    <!-- Parte II.1: consultarCliente(@Param("idcli") int id) -->
     <select id="consultarCliente" parameterType="map" resultMap="ClienteResult">
         SELECT
             c.nombre            AS cliente_nombre,
@@ -72,7 +61,6 @@
             c.direccion         AS cliente_direccion,
             c.email             AS cliente_email,
             c.vetado            AS cliente_vetado,
-            ir.id               AS renta_id,
             ir.fechainiciorenta AS renta_fechainicio,
             ir.fechafinrenta    AS renta_fechafin,
             i.id                AS item_id,
@@ -85,17 +73,13 @@
             ti.id               AS tipoitem_id,
             ti.descripcion      AS tipoitem_descripcion
         FROM VI_CLIENTES AS c
-        LEFT JOIN VI_ITEMRENTADO AS ir ON c.documento = ir.CLIENTES_documento
+        LEFT JOIN VI_ITEMRENTADO AS ir ON c.documento  = ir.CLIENTES_documento
         LEFT JOIN VI_ITEMS       AS i  ON ir.ITEMS_id  = i.id
         LEFT JOIN VI_TIPOITEM    AS ti ON i.TIPOITEM_id = ti.id
         WHERE c.documento = #{idcli}
     </select>
 
-    <!-- =====================================================
-         INSERT – agregarItemRentadoACliente   [Parte II.3]
-         Parámetros: @Param("idc"), @Param("idi"),
-                     @Param("fechainicio"), @Param("fechafin")
-         ===================================================== -->
+    <!-- Parte II.3: agregarItemRentadoACliente -->
     <insert id="agregarItemRentadoACliente" parameterType="map">
         INSERT INTO VI_ITEMRENTADO
             (CLIENTES_documento, ITEMS_id, fechainiciorenta, fechafinrenta)
