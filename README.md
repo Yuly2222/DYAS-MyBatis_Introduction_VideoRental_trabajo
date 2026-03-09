@@ -2,6 +2,12 @@
 ### Diseño y Arquitectura de Software
 #### Tecnologías de persistencia - Frameworks de Persistencia - Introducción a MyBatis
 
+#### Integrantes del equipo:
+
+* Brayan Presiga Sepulveda - 0000301424
+* Juan David Sanchez Roldan - 0000340321
+* Yuly Dayana Rodríguez Salcedo -0000305314
+
 En este taller se utilizará un 'framework' de persistencia. La base de datos que se utilizará tiene los siguientes parámetros:
 
     host: local/taller
